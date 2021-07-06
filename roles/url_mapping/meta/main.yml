@@ -1,0 +1,30 @@
+galaxy_info:
+  author: zone-zero
+  description: Idempotent Role to upload/delete/get url mapping (dynurl)
+  company: VF
+
+  license: Apache
+
+  min_ansible_version: 2.5
+  platforms:
+    - name: Fedora
+      versions:
+        - 30
+        - 29
+        - 28
+        - 27
+    - name: EL
+      versions:
+        - 8
+        - 7
+        - 6
+
+  galaxy_tags:
+  - isam
+  - ibm
+  - upload
+  - web
+  - dynurl
+
+dependencies:
+  - common_handlers
