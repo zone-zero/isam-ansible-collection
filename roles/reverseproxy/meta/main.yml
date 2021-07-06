@@ -1,11 +1,11 @@
 galaxy_info:
-  author: K Martin
+  author: zone-zero
   description: Role to create/update/destroy a reverse proxy instance
   company: VF
 
   license: Apache
 
-  min_ansible_version: 2.2
+  min_ansible_version: 2.5
   platforms:
     - name: Fedora
       versions:
