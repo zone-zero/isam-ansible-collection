@@ -1,0 +1,13 @@
+- name: "Attach ACL: {{ policy_acl_attachment_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "object show {{policy_acl_attachment_root}}{{item}}"
+    - "acl attach {{policy_acl_attachment_root}}{{item}} {{ policy_acl_attachment_name }}"
+  register: policy_acl_attachment_result
+  failed_when: policy_acl_attachment_result.rc !=0
+  changed_when: "policy_acl_attachment_result.data.result is not search ('Attached ACL: ' + policy_acl_attachment_name)"
+  loop: "{{ policy_acl_attachment_objects }}"

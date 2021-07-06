@@ -1,0 +1,38 @@
+- name: "Create ACL {{ policy_acl_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "acl create {{ policy_acl_name }}"
+  register: create_policy_acl_result
+  failed_when: create_policy_acl_result.rc == 500 and not create_policy_acl_result.data.result is search('Object already exists')
+  changed_when: create_policy_acl_result.rc == 0
+
+
+- name: "Set description on ACL {{ policy_acl_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "acl modify {{ policy_acl_name }} description \"{{ policy_acl_description }}\""
+  register: create_policy_acl_result
+  failed_when: create_policy_acl_result.rc == 500
+  changed_when: create_policy_acl_result.rc == 0
+  when: create_policy_acl_result.changed
+
+- name: "Set permission list on ACL {{ policy_acl_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "acl modify {{ policy_acl_name }} set {{ item.key }} {{ item.value }}"
+  register: create_policy_acl_result
+  failed_when: create_policy_acl_result.rc == 500
+  when: create_policy_acl_result.changed
+  loop: "{{ base_list | combine(policy_acl_permissions_list)  | dict2items }}"

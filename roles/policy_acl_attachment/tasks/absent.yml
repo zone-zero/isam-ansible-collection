@@ -1,0 +1,15 @@
+- name: "Detach ACL"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "acl detach {{policy_acl_attachment_root}}{{item}}"
+  register: policy_acl_attachment_result
+  failed_when: | 
+    policy_acl_attachment_result.rc == 500
+    and policy_acl_attachment_result.data.result is not
+    search ('The ACL name specified was not found in the authorization policy database.')
+  changed_when:  policy_acl_attachment_result.rc == 0
+  loop: "{{ policy_acl_attachment_objects }}"
