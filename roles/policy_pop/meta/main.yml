@@ -1,0 +1,29 @@
+galaxy_info:
+  author: K Martin
+  description: Role that creates and deletes POPs. idempotent.
+  company: VF
+
+  license: Proprietary
+
+  min_ansible_version: 2.5
+  platforms:
+    - name: Fedora
+      versions:
+        - 30
+        - 29
+        - 28
+        - 27
+    - name: EL
+      versions:
+        - 8
+        - 7
+        - 6
+
+  galaxy_tags:
+  - isam
+  - ibm
+  - policyserver
+  - pdadmin
+
+dependencies:
+  - common_handlers

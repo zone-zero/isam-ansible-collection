@@ -1,0 +1,27 @@
+- name: "list POPs matching pattern {{ policy_pop_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: False
+    commands:
+    - "pop list"
+  register: list_policy_pop_result
+  changed_when: False
+
+  # there is capability to filter a pop list on the appliance, so we have to filter after the fact.
+  # convert the standard '*' wildcard supported by the normal acl list to a regex  (just change it to .*) to filter here in ansible
+- name: "set policy_pop_list_result fact to list of pops found matching pattern {{ policy_pop_name }}"
+  set_fact:
+    policy_pop_list_result:
+      "{{ 
+        list_policy_pop_result.data.result.split('\n')[1:] 
+        |  map('regex_search','^' + 
+                  policy_pop_name_regexified_wildcards
+                + '$'
+              ) 
+        | select() 
+      }}"
+
+
+

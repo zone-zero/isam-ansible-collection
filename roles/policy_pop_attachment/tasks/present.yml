@@ -1,0 +1,13 @@
+- name: "Attach POP: {{ policy_pop_attachment_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "object show {{policy_pop_attachment_root}}{{item}}"
+    - "pop attach {{policy_pop_attachment_root}}{{item}} {{ policy_pop_attachment_name }}"
+  register: policy_pop_attachment_result
+  failed_when: policy_pop_attachment_result.rc != 0
+  changed_when: "policy_pop_attachment_result.data.result is not search ('Attached POP: ' + policy_pop_attachment_name)"
+  loop: "{{ policy_pop_attachment_objects }}"

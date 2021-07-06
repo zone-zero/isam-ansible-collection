@@ -1,0 +1,11 @@
+- include: absent.yml
+  when: state == "absent" or force is true
+
+- include: present.yml
+  when: state == "present"
+
+- include: list.yml
+  when: state == "list"
+
+- include: find.yml
+  when: state == "find"

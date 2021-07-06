@@ -1,0 +1,23 @@
+- name: Find all POP {{ policy_pop_name }} attachment points
+  include: find.yml
+  when: policy_pop_detach_before_delete is true 
+
+- name: Detach POP {{ policy_pop_name }} from all attachment points
+  include_role:
+    name: ibm.isam.policy_pop_attachment
+  vars:
+    policy_pop_attachment_objects: "{{ policy_pop_find_result }}"
+    policy_pop_attachment_root: ""
+  when: policy_pop_detach_before_delete is true 
+
+- name: "Delete POP {{ policy_pop_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "pop delete {{ policy_pop_name }}"
+  register: delete_policy_pop_result
+  failed_when: delete_policy_pop_result.rc == 500 and not delete_policy_pop_result.data.result is search('The protected object policy specified was not found')
+  changed_when: delete_policy_pop_result.rc == 0

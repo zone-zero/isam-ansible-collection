@@ -1,0 +1,15 @@
+- name: "Detach POP"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "pop detach {{policy_pop_attachment_root}}{{item}}"
+  register: policy_pop_attachment_result
+  failed_when: | 
+    policy_pop_attachment_result.rc != 0
+    and policy_pop_attachment_result.data.result is not
+    search ('The protected object policy specified was not found')
+  changed_when:  policy_pop_attachment_result.rc == 0
+  loop: "{{ policy_pop_attachment_objects }}"

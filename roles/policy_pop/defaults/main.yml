@@ -1,0 +1,14 @@
+
+# Use Default domain, override as needed
+execute_pdadmin_domain: "Default"
+
+
+
+state: "present"
+force: false
+recurse: true
+policy_pop_list_max_return: 1000
+policy_pop_detach_before_delete: false
+policy_pop_attributes: "{{ [] }}"
+policy_pop_config: "{{ {} }}"
+policy_pop_name_regexified_wildcards: "{{ policy_pop_name | regex_replace( '\\*', '.*') }}"
