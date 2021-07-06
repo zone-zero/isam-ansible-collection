@@ -1,0 +1,12 @@
+- name: create junction {{ junction_junction_point }} on {{ junction_reverseproxy_id }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.junctions.delete
+    isamapi:
+      junctionname: "{{ junction_junction_point }}"
+      reverseproxy_id: "{{ junction_reverseproxy_id }}"
+  when:
+    - junction_junction_point is defined
+    - junction_reverseproxy_id is defined
+

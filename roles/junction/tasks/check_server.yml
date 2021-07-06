@@ -1,0 +1,82 @@
+#checks:
+
+#if ssl or mutual, get the junction certificate database used by the proxy
+
+
+#if ssl or mutual, get DNs of all trusted signers certificate database
+
+
+# dns resolves "nslookup"
+- name: confirm server name {{item.server_hostname}} can be resolved
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.base.cli.execute
+    isamapi:
+      cli_warning: false
+      command: "tools/nslookup {{item.server_hostname}}"
+      input:
+  register: junction_cli_output
+  changed_when: false
+  failed_when: "junction_cli_output.data.output is search('nslookup: can.t resolve')"
+  
+# port is open "connect"
+- name: confirm connectivity to {{item.server_hostname}} on port {{item.server_port}}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.base.cli.execute
+    isamapi:
+      cli_warning: false
+      command: "tools/connect {{item.server_hostname}}:{{item.server_port}} {{junction_connect_check_timeout}}"
+      input:
+  register: junction_cli_output
+  changed_when: false
+  failed_when: "junction_cli_output.data.output is search('Status: failed')"
+
+  # https checks
+- name: confirm https connection to {{item.server_hostname}} on port {{item.server_port}}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.base.cli.execute
+    isamapi:
+      cli_warning: false
+      command: "tools/session ssl {{item.server_hostname}}:{{item.server_port}} {{junction_https_check_timeout}} -showcerts"
+      input:
+        - "exit"
+  register: junction_cli_output
+  changed_when: false
+  failed_when: "junction_cli_output.data.output is not search('CONNECTED')"
+  when: junction_junction_type == "ssl"
+
+  #TODO https connection for mutual TLS
+
+- name: extract cert data from https connectivity check
+  set_fact:
+    _junction_server_certs: "{{ junction_cli_output.data.output \
+                    | regex_findall('\\s\\d\\ss:(?P<subjectDN>.*?)\\n\\s+i:(?P<issuerDN>.*?)\\n(?P<cert>-----BEGIN CERTIFICATE-----[^<]*?-----END CERTIFICATE-----)') }}"
+  when: junction_junction_type == "ssl" and junction_trusted_root_list is defined
+
+- name: create chain list
+  set_fact: 
+    _junction_untrusted_cert_chain: "{{ (_junction_untrusted_cert_chain | default([])) + [cert_item.2] }} "
+  loop: "{{ _junction_server_certs[1:] }}"
+  loop_control:
+    label: "{{ cert_item.0 }}"
+    loop_var: cert_item
+  when: junction_junction_type == "ssl" and junction_trusted_root_list is defined
+
+
+- name: Validate certificate {{ _junction_server_certs[0][0]}} for {{item.server_hostname}}
+  local_action:
+    module: ibm.isam.validate_cert
+    cert: "{{ _junction_server_certs[0][2] }}"
+    trusted_roots: "{{ junction_trusted_root_list }}"
+    trust_chain: "{{ _junction_untrusted_cert_chain | default(None) }}"
+    cert_dn: "{{ item.server_dn }}"
+  when: junction_junction_type == "ssl" and junction_trusted_root_list is defined
+
+- name: unset chain list
+  set_fact:
+    _junction_unstrusted_cert_chain:

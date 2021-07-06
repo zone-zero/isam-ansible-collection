@@ -1,0 +1,77 @@
+---
+
+# The following need to be provided for this role to succeed
+#junction_junction_point:
+#junction_junction_type:
+#junction_reverseproxy_id:
+#junction_server_hostname:
+#junction_server_port:
+
+# Provide these options values
+junction_basic_auth_mode:
+junction_stateful_junction:
+junction_client_ip_http:
+junction_scripting_support:
+junction_junction_cookie_javascript_block:
+junction_virtual_hostname:
+junction_server_dn:
+junction_query_contents:
+junction_case_sensitive_url:
+junction_windows_style_url:
+junction_proxy_hostname:
+junction_proxy_port:
+junction_sms_environment:
+junction_vhost_label:
+junction_junction_hard_limit:
+junction_junction_soft_limit:
+junction_tfim_sso:
+junction_remote_http_header:
+junction_preserve_cookie:
+junction_cookie_include_path:
+junction_transparent_path_junction:
+junction_mutual_auth:
+junction_insert_session_cookies:
+junction_request_encoding:
+junction_enable_basic_auth:
+junction_key_label:
+junction_gso_resource_group:
+junction_version_two_cookies:
+junction_ltpa_keyfile:
+junction_ltpa_keyfile_password:
+junction_authz_rules:
+junction_fsso_config_file:
+junction_server_uuid:
+junction_local_ip:
+junction_delegation_support:
+junction_insert_ltpa_cookies:
+junction_http2_junction:
+junction_http2_proxy:
+junction_sni_name:
+junction_username:
+junction_password:
+
+
+junction_servers_defaults:
+  server_hostname:
+  server_port:
+  server_proxy_hostname:
+  server_proxy_port:
+  server_dn:
+  server_virtual_hostname:
+  server_uuid:
+  server_case_sensitive_url:
+  server_windows_style_url:
+  server_https_port:
+  server_http_port:
+  server_query_contents:
+  server_virtual_https_hostname:
+  server_check: true
+
+
+junction_connect_check_timeout: 5
+junction_session_check_timeout: "{{ junction_connect_check_timeout }}"
+junction_https_check_timeout: "{{ junction_connect_check_timeout }}"
+
+junction_server_check: True
+
+default_null:
