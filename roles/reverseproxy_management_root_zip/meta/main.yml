@@ -1,0 +1,30 @@
+galaxy_info:
+  author: zone-zero
+  description: Role to get/set a reverseproxy management root zip file - requires 'zip' command line tool
+  company: VF
+
+  license: Apache
+
+  min_ansible_version: 2.5
+  platforms:
+    - name: Fedora
+      versions:
+        - 30
+        - 29
+        - 28
+        - 27
+    - name: EL
+      versions:
+        - 8
+        - 7
+        - 6
+
+  galaxy_tags:
+  - isam
+  - ibm
+  - reverseproxy
+  - web
+  - create
+
+dependencies:
+  - common_handlers

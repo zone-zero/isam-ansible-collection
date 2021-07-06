@@ -1,0 +1,7 @@
+state: 'present'
+force: False
+
+reverseproxy_inst_name: 'default'
+reverseproxy_management_root_zip_file: "{{ reverseproxy_management_root_zip_src }}"
+reverseproxy_management_root_zip_delete_missing: false
+reverseproxy_management_root_tmp_dir: "/tmp"

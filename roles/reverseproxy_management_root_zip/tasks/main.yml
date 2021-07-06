@@ -1,0 +1,7 @@
+
+- include: set.yml
+  when: 
+  - state == "present"
+
+- include: get.yml
+  when: state == "get"
