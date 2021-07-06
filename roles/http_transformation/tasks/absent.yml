@@ -1,0 +1,11 @@
+- name: Delete HTTP Transformation rule - {{ http_transformation_id }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.http_transformation.delete
+    isamapi:
+      id: "{{ http_transformation_id }}"
+  when: http_transformation_id is defined
+  # register: http_transformation_delete_result
+  notify:
+  - Commit Changes

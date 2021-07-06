@@ -1,0 +1,17 @@
+# def get_all(isamAppliance, check_mode=False, force=False):
+#     """
+#     Retrieving all HTTP Transformation
+#     """
+#     return isamAppliance.invoke_get("Retrieving all HTTP Transformation",
+#                                     "/wga/http_transformation_rules")
+
+- name: List all HTTP Transformation rules
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.http_transformation.get_all
+  register: _list_result
+
+- name: set http_transformation_list_result fact
+  set_fact:
+    http_transformation_list_result: "{{ _list_result.data | map(attribute='id') }}"

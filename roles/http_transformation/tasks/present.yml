@@ -1,0 +1,12 @@
+- name: Add HTTP Transformation rule - {{ http_transformation_id }} from template - {{ http_transformation_template }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.http_transformation.add
+    isamapi:
+      id: "{{ http_transformation_id }}"
+      content: "{{ lookup('template', http_transformation_template) }}"
+      #template: "stuff"
+  when: http_transformation_id is defined and http_transformation_template is defined
+  notify:
+  - Commit Changes
