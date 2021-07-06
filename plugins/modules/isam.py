@@ -56,6 +56,7 @@ import sys
 from ansible.module_utils.basic import AnsibleModule
 import datetime
 from ansible.module_utils.six import string_types
+import json
 
 from ansible_collections.ibm.isam.plugins.module_utils.isam import ISAMUtil
 
@@ -93,14 +94,15 @@ def main():
         options = options + ', check_mode=True'
     if isinstance(module.params['isamapi'], dict):
         for key, value in module.params['isamapi'].items():
-            if isinstance(value, string_types):
-                options = options + ', ' + key + '="' + value + '"'
-            else:
-                options = options + ', ' + key + '=' + str(value)
+            if value != '' and value is not None:
+                if isinstance(value, string_types):
+                    options = options + ', ' + key + '=' + json.dumps(value) 
+                else:
+                    options = options + ', ' + key + '=' + str(value)
     else:
         module.debug('No isamapi dict object passed.')
+    #raise Exception('Option to be passed to action: ' + options)
     module.debug('Option to be passed to action: ' + options)
-
     # Dynamically process the action to be invoked
     # Simple check to restrict calls to just "isam" ones for safety
     if action.startswith('ibmsecurity.isam.'):
