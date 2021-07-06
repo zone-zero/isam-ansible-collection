@@ -1,0 +1,37 @@
+
+- name: Get all reverse proxies
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.instance.get
+  register: get_proxy_ret_obj
+  
+- name: get proxy {{ reverseproxy_next_value_stanza_id }} - {{ reverseproxy_next_value_entry_id }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.configuration.entry.get
+    isamapi:
+      reverseproxy_id: "{{ item.id }}"
+      stanza_id: "{{ reverseproxy_next_value_stanza_id }}"
+      entry_id: "{{ reverseproxy_next_value_entry_id }}"
+  register: config_get_ret_obj
+  loop: "{{ get_proxy_ret_obj.data }}"
+  loop_control:
+    label: "{{ item.id }}"
+  
+
+- name: initialize _reverseproxy_next_value_used_ports fact
+  set_fact:
+    _reverseproxy_next_value_used_ports: "{{ [] }}"
+  
+- name: aggregate {{ reverseproxy_next_value_entry_id }} ports into _reverseproxy_next_value_used_ports fact
+  set_fact:
+    _reverseproxy_next_value_used_ports: "{{ (_reverseproxy_next_value_used_ports | default([])) + [item.data[reverseproxy_next_value_entry_id].0 | int] }}"
+  loop: "{{ config_get_ret_obj.results }}"
+  loop_control:
+    label: "port: {{ item.data[reverseproxy_next_value_entry_id].0 }} used by {{ item.item.instance_name }}"
+
+- name: get first unused {{ reverseproxy_next_value_entry_id }} port
+  set_fact:
+    reverseproxy_next_value_port_fact: "{{ range(reverseproxy_next_value_min_port | int,reverseproxy_next_value_max_port | int,1) | difference(_reverseproxy_next_value_used_ports) | first | int }}"

@@ -1,0 +1,9 @@
+- meta: flush_handlers
+
+- include: absent.yml
+  when: state == "absent" or force is true
+
+
+#Create a reverse proxy instance
+- include: present.yml
+  when: state == "present"

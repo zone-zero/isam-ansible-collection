@@ -1,0 +1,6 @@
+state: 'present'
+force: False
+
+#range of ports to check for next available listening port
+reverseproxy_next_value_min_port: 7234
+reverseproxy_next_value_max_port: 7334
