@@ -1,0 +1,38 @@
+# if file is a directory, create a zip file
+
+
+#can't use archive for this when delete_missing is true. It doesn't store directories in a way that
+#zipinfo can see them, causes all kinds of problems.
+# - name: Zip up files
+#   archive:
+#     path: "{{ reverseproxy_management_root_zip_path }}/*"
+#     dest: "{{reverseproxy_management_root_tmp_dir}}/{{inventory_hostname}}_mgmt_root.zip"
+#     format: "zip"
+#     force_archive: yes
+#   when: not (reverseproxy_management_root_zip_path | regex_search('\.zip$'))
+
+- name: Zip up files
+  command:
+    chdir: "{{ reverseproxy_management_root_zip_path }}"
+    cmd: "zip -r {{inventory_hostname}}_mgmt_root.zip ."
+    creates: "{{ reverseproxy_management_root_zip_path }}/{{inventory_hostname}}_mgmt_root.zip"
+  when: not (reverseproxy_management_root_zip_path | regex_search('\.zip$'))
+  changed_when: false # do not consider the creation of the zip file a change
+
+
+- name: Set the source zip file
+  set_fact:
+    reverseproxy_management_root_zip_file: "{{ reverseproxy_management_root_zip_path }}/{{inventory_hostname}}_mgmt_root.zip"
+  when: not (reverseproxy_management_root_zip_path | regex_search('\.zip$'))
+
+- name: upload the zip file
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.management_root.all.import_zip
+    isamapi:
+      instance_id: "{{ reverseproxy_management_root_zip_inst_id }}"
+      filename: "{{ reverseproxy_management_root_zip_file | default(reverseproxy_management_root_zip_path) }}"
+      delete_missing: "{{ reverseproxy_management_root_zip_delete_missing }}"
+  notify:
+  - Commit Changes

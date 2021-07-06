@@ -1,0 +1,16 @@
+
+- name: Set the dest zip file
+  set_fact:
+    reverseproxy_management_root_zip_file: "{{ reverseproxy_management_root_zip_path }}/{{inventory_hostname}}_mgmt_root.zip"
+  when: not (reverseproxy_management_root_zip_path | regex_search('\.zip$'))
+
+- name: download the zip file
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.management_root.all.export_zip
+    isamapi:
+      instance_id: "{{ reverseproxy_management_root_zip_inst_id }}"
+      filename: "{{ reverseproxy_management_root_zip_file | default(reverseproxy_management_root_zip_path) }}"
+  notify:
+  - Commit Changes
