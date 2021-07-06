@@ -1,0 +1,7 @@
+
+# Use Default domain, override as needed
+execute_pdadmin_domain: "Default"
+
+state: "present"
+force: false
+policy_acl_attachment_root: "/WebSEAL/"
