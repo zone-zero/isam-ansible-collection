@@ -1,0 +1,16 @@
+# Set stanza(s)/entries in reverse proxy config file
+- name: Set reverse proxy config entries
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.configuration.entry.set
+    isamapi:
+      reverseproxy_id: "{{ reverseproxy_conf_reverseproxy_id }}"
+      stanza_id: "{{ item.stanza_id }}"
+      entries: "{{ item.entries }}"
+  loop: "{{ reverseproxy_conf_entries }}"
+  loop_control:
+    label: "\nstanza: [{{ item.stanza_id }}] \n\tentries:\n\t{{ item.entries | join('\n\t') }}"
+  notify:
+  - Commit Changes
+  - Restart Reverse Proxy

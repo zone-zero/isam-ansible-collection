@@ -1,0 +1,31 @@
+galaxy_info:
+  author: zone-zero
+  description: Idempotent role to set/append/delete/get values in reverse proxy configuration file with given stanza/entries
+  company: VF
+
+  license: Apache
+
+  min_ansible_version: 2.5
+  platforms:
+    - name: Fedora
+      versions:
+        - 30
+        - 29
+        - 28
+        - 27
+    - name: EL
+      versions:
+        - 8
+        - 7
+        - 6
+
+  galaxy_tags:
+  - isam
+  - ibm
+  - reverseproxy
+  - web
+  - configuration
+  - set
+
+dependencies:
+  - common_handlers
