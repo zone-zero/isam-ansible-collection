@@ -1,0 +1,33 @@
+
+- name: Get all reverse proxies
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.instance.get
+  register: get_proxy_ret_obj
+  
+- name: get proxy {{ reverseproxy_find_with_config_value_stanza_id }} - {{ reverseproxy_find_with_config_value_entry_id }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.configuration.entry.get
+    isamapi:
+      reverseproxy_id: "{{ item.id }}"
+      stanza_id: "{{ reverseproxy_find_with_config_value_stanza_id }}"
+      entry_id: "{{ reverseproxy_find_with_config_value_entry_id }}"
+  register: config_get_ret_obj
+  loop: "{{ get_proxy_ret_obj.data }}"
+  loop_control:
+    label: "{{ item.id }}"
+  
+- name: init reverseproxy_find_with_config_value_fact
+  set_fact:
+    reverseproxy_find_with_config_value_fact: "{{[]}}"
+
+- name: return name of proxy or proxies with {{ reverseproxy_find_with_config_value_entry_id }} = {{ reverseproxy_find_with_config_value_entry_value }}
+  set_fact:
+    reverseproxy_find_with_config_value_fact: "{{ reverseproxy_find_with_config_value_fact + [item.item.instance_name] }}"  
+  loop: "{{ config_get_ret_obj.results }}"
+  loop_control:
+    label: "{{ item.item.instance_name }}"
+  when: reverseproxy_find_with_config_value_entry_value | string in item.data[reverseproxy_find_with_config_value_entry_id]
