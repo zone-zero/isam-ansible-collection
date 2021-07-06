@@ -1,0 +1,55 @@
+  - name: Get reverse proxy config entry
+    ibm.isam.isam:
+      log: "{{ log_level | default('INFO') }}"
+      force: "{{ force | default(False) }}"
+      action: ibmsecurity.isam.web.reverse_proxy.configuration.entry.get
+      isamapi:
+        reverseproxy_id: "{{ get_jct_trusted_roots_proxy_name }}"
+        stanza_id: "{{ item.0.stanza_id }}"
+        entry_id: "{{ item.1.0 }}"
+    loop: "{{ _get_jct_trusted_roots_ssl_cfg_entries | subelements('entries') }}"
+    loop_control:
+      label: "\nstanza: [{{ item.0.stanza_id }}] \n\tentry:\n\t{{ item.1.0 }}"
+    register: _get_jct_trusted_roots_ssl_stores
+
+  # - debug:
+  #     msg: "{{ _get_jct_trusted_roots_ssl_stores }}"
+
+  - name: list all signer certs
+    ibm.isam.isam:
+      log: "{{ log_level | default('INFO') }}"
+      force: "{{ force | default(False) }}"
+      action: ibmsecurity.isam.base.ssl_certificates.signer_certificate.get_all
+      isamapi:
+        kdb_id: "{{ _get_jct_trusted_roots_ssl_stores['results'][0]['data']['jct-cert-keyfile'][0] \
+            | default(_get_jct_trusted_roots_ssl_stores['results'][1]['data']['webseal-cert-keyfile'][0], true) \
+            | replace('.kdb', '') }}"
+    register: _get_jct_trusted_roots_kdb_get_ret_obj
+
+  #export all signer certs from kdb used for certificates.
+  #webseal prefers jct-cert-keyfil if it exists, but will fall back
+  #webseal-cert-keyfile, so we need to check both
+  - name: get all signer certs
+    ibm.isam.isam:
+      log: "{{ log_level | default('INFO') }}"
+      force: "{{ force | default(False) }}"
+      action: ibmsecurity.isam.base.ssl_certificates.signer_certificate.get
+      isamapi:
+        kdb_id: "{{ _get_jct_trusted_roots_ssl_stores['results'][0]['data']['jct-cert-keyfile'][0] \
+            | default(_get_jct_trusted_roots_ssl_stores['results'][1]['data']['webseal-cert-keyfile'][0], true) \
+            | replace('.kdb', '') }}"
+        cert_id: "{{ item.id }}"
+    register: _get_jct_trusted_roots_signer_cert_obj
+    loop: "{{ _get_jct_trusted_roots_kdb_get_ret_obj.data }}"
+    loop_control:
+      label: "{{ item.id }}"
+
+  - name: create trusted root list
+    set_fact:
+      jct_trusted_roots: "{{ (jct_trusted_roots | default([])) + [item.data.contents] }}"
+    loop: "{{ _get_jct_trusted_roots_signer_cert_obj.results }}"
+    loop_control:
+      label: "{{ item.invocation.module_args.isamapi.cert_id }}"
+
+  # - debug:
+  #     msg: "{{ jct_trusted_roots }}"

@@ -1,0 +1,7 @@
+  _get_jct_trusted_roots_ssl_cfg_entries:
+    - stanza_id: junction
+      entries:
+        - ["jct-cert-keyfile", ""]
+    - stanza_id: ssl
+      entries:
+        - ["webseal-cert-keyfile", ""]
