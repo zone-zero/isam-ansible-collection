@@ -1,0 +1,17 @@
+- name: "list ACLs matching pattern {{ policy_acl_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: False
+    commands:
+    - "acl list {{ policy_acl_name }} {{ policy_acl_list_max_return }}"
+  register: list_policy_acl_result
+  changed_when: False
+
+- name: "set policy_acl_list_result fact to list of acls found"
+  set_fact:
+    policy_acl_list_result: "{{ list_policy_acl_result.data.result.split('\n')[1:] }}"
+
+
+

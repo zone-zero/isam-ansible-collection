@@ -1,0 +1,23 @@
+- name: Find all ACL attachment points
+  include: find.yml
+  when: policy_acl_detach_before_delete is true 
+
+- name: Find all ACL attachment points
+  include_role:
+    name: ibm.isam.policy_acl_attachment
+  vars:
+    policy_acl_attachment_objects: "{{ policy_acl_find_result }}"
+    policy_acl_attachment_root: ""
+  when: policy_acl_detach_before_delete is true 
+
+- name: "Delete ACL {{ policy_acl_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "acl delete {{ policy_acl_name }}"
+  register: delete_policy_acl_result
+  failed_when: delete_policy_acl_result.rc == 500 and not delete_policy_acl_result.data.result is search('The ACL name specified was not found in the authorization policy database')
+  changed_when: delete_policy_acl_result.rc == 0

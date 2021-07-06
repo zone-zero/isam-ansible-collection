@@ -1,0 +1,15 @@
+
+# Use Default domain, override as needed
+execute_pdadmin_domain: "Default"
+
+
+
+state: "present"
+force: false
+recurse: true
+policy_acl_list_max_return: 1000
+base_list:
+  group iv-admin: "TcmdbsvaBRlrx"
+  user sec_master: "TcmdbsvaBRlrx"
+
+policy_acl_detach_before_delete: false  

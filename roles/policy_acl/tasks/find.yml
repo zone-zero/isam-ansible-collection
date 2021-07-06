@@ -1,0 +1,17 @@
+- name: "Find ACL attachment points for acl {{ policy_acl_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: False
+    commands:
+    - "acl find {{ policy_acl_name }}"
+  register: find_policy_acl_result
+  changed_when: False
+
+- name: "set find_policy_acl_result fact to list of acl attachment points"
+  set_fact:
+    policy_acl_find_result: "{{ find_policy_acl_result.data.result.split('\n')[1:] }}"
+
+
+
