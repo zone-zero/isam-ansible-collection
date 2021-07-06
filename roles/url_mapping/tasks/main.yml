@@ -1,0 +1,11 @@
+
+- include: absent.yml
+  when:
+  - state == "absent"
+
+- include: present.yml
+  when: 
+  - state == "present"
+
+- include: get.yml
+  when: state == "get"

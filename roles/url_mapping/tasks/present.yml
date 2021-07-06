@@ -1,0 +1,15 @@
+- name: load dynurl content from file if a file was specified
+  set_fact:
+    url_mapping_dynurl_config_data: "{{ lookup('template', url_mapping_file) }}"
+  when: url_mapping_file is defined
+
+- name: Import URL Mapping (dynurl) - {{ url_mapping_id }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.url_mapping.add
+    isamapi:
+      name: "{{ url_mapping_name }}"
+      dynurl_config_data: "{{ url_mapping_dynurl_config_data }}"
+  when: url_mapping_name is defined and url_mapping_dynurl_config_data is defined
+  notify: Commit Changes
