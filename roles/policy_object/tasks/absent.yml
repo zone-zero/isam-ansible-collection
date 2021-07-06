@@ -1,0 +1,21 @@
+- name: disable recursive delete
+  set_fact: 
+    _delete_policy_object_recurse_cmd: ""
+  when: not policy_object_delete_recursive
+
+- name: enable recursive delete
+  set_fact:
+    _delete_policy_object_recurse_cmd: "-recursive "
+  when: policy_object_delete_recursive
+
+- name: "Delete policy object {{ policy_object_root }}{{ policy_object_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "object delete {{_delete_policy_object_recurse_cmd}}{{ policy_object_root }}{{ policy_object_name }}"
+  register: delete_policy_object_result
+  failed_when: delete_policy_object_result.rc == 500 and not delete_policy_object_result.data.result is search('The protected object name specified was not found in the authorization policy database')
+  changed_when: delete_policy_object_result.rc == 0
