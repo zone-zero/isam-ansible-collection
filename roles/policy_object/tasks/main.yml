@@ -1,0 +1,12 @@
+- include: absent.yml
+  when: state == "absent" or force is true
+
+- include: present.yml
+  when: state == "present"
+
+- include: attributes.yml
+  when: >-
+        policy_object_attributes | length > 0 and (
+          state == "attributes" or 
+            (state == "present" and create_policy_object_result.changed)
+        ) 

@@ -1,0 +1,12 @@
+- name: "Create Policy Object {{ policy_object_root }}{{ policy_object_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "object create {{ policy_object_root }}{{ policy_object_name }} \"{{ policy_object_description}}\" {{policy_object_type}} ispolicyattachable {{ policy_object_policy_attachable }}"
+  register: create_policy_object_result
+  failed_when: create_policy_object_result.rc != 0 and not create_policy_object_result.data.result is search('Object already exists')
+  changed_when: create_policy_object_result.rc == 0
+

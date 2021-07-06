@@ -1,0 +1,19 @@
+# - name: debug attributes
+#   debug:
+#     msg: "{{ policy_object_attributes }}"
+
+- name: "Set attribute on Policy Object {{ policy_object_root }}{{ policy_object_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: True
+    commands:
+    - "object show {{ policy_object_root }}{{ policy_object_name }} attribute {{ item.0.attr_name }}"
+    - "object modify {{ policy_object_root }}{{ policy_object_name }} set attribute {{ item.0.attr_name }} {{ item.1 }}"
+  register: set_policy_object_attribute_result
+  failed_when: set_policy_object_attribute_result.rc != 0
+  changed_when: set_policy_object_attribute_result.rc == 0 and not (set_policy_object_attribute_result.data.result |  regex_search(item.1 + '(.|\n)*cmd> object modify' ))
+  loop: "{{ policy_object_attributes | subelements('attr_value') }}"
+  loop_control:
+    label: "{{ item.0.attr_name }} - {{ item.1 }}"
