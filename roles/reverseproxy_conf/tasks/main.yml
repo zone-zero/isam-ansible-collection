@@ -1,0 +1,22 @@
+# - debug:
+#     msg: "{{ state }} - {{ state2 }}"
+
+
+# - include: get.yml
+#   when: state == "readonly"
+
+- include: append.yml
+  when: 
+  - append
+  - state == "present"
+
+- include: set.yml
+  when: 
+  - state == "present"
+  - not append
+
+- include: delete.yml
+  when: state == "absent"
+
+- include: get.yml
+  when: state == "get"

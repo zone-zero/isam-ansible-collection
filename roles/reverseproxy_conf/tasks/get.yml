@@ -1,0 +1,23 @@
+
+- name: Get reverse proxy config entry
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.configuration.entry.get
+    isamapi:
+      reverseproxy_id: "{{ reverseproxy_conf_reverseproxy_id }}"
+      stanza_id: "{{ item.0.stanza_id }}"
+      entry_id: "{{ item.1.0 }}"
+  loop: "{{ reverseproxy_conf_entries | subelements('entries') }}"
+  loop_control:
+    label: "\nstanza: [{{ item.0.stanza_id }}] \n\tentry:\n\t{{ item.1.0 }}"
+  register: config_get_ret_obj
+
+- name: set to 'reverseproxy_conf_get.[key]' fact for returned entry
+  set_fact:
+    reverseproxy_conf_get: "{{ reverse_proxy_conf_get | default({}) | \
+      combine(\
+        {reverseproxy_conf_reverseproxy_id:{item.key:item.value}}, recursive=True\
+      ) }}"
+  loop: "{{ lookup('dict', config_get_ret_obj.results.0.data, wantlist=True) }}"
+  when: item is defined
