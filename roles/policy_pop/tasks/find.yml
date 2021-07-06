@@ -1,0 +1,17 @@
+- name: "Find POP attachment points for pop {{ policy_pop_name }}"
+  ibm.isam.isamadmin:
+    log: "{{ log_level | default('INFO') }}"
+    isamuser: "{{ execute_pdadmin_isamuser }}"
+    isampwd: "{{ execute_pdadmin_isampwd }}"
+    ignore_error: False
+    commands:
+    - "pop find {{ policy_pop_name }}"
+  register: find_policy_pop_result
+  changed_when: False
+
+- name: "set find_policy_pop_result fact to list of pop attachment points"
+  set_fact:
+    policy_pop_find_result: "{{ find_policy_pop_result.data.result.split('\n')[1:] }}"
+
+
+
