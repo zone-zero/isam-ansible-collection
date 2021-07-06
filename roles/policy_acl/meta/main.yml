@@ -1,11 +1,11 @@
 galaxy_info:
-  author: K Martin
-  description: Role that creates and deletes policy objects. idempotent. TODO documentation
+  author: zone-zero
+  description: Role that creates and deletes policy objects. idempotent.
   company: VF
 
   license: Proprietary
 
-  min_ansible_version: 2.2
+  min_ansible_version: 2.5
   platforms:
     - name: Fedora
       versions:
