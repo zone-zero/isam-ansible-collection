@@ -1,0 +1,26 @@
+- include: absent.yml
+  when: state == "absent" or force is true
+
+- name: populate junction server array with defaults
+  set_fact:
+    _junction_fact_servers: "{{ (_junction_fact_servers | default([])) \
+      + [(junction_servers_defaults | combine(item))] }}"
+  loop: "{{ junction_servers }}"
+  loop_control:
+    label: "{{ item.server_hostname }}"
+  when: state == 'present' 
+
+
+- name: check server connectivity
+  include: check_server.yml
+  when: state == "present" and item.server_check is true
+  loop: "{{ _junction_fact_servers }}"
+  loop_control:
+    label: "{{ item.server_hostname }}"
+
+- include: present.yml
+  when: state == "present"
+  
+- name: Clear junction facts
+  set_fact:
+    _junction_fact_servers: "{{ [] }}"

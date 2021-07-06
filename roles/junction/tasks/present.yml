@@ -1,0 +1,97 @@
+- name: create junction {{ junction_junction_point }} on {{ junction_reverseproxy_id }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.junctions.set
+    isamapi:
+      junction_point: "{{ junction_junction_point }}"
+      junction_type: "{{ junction_junction_type }}"
+      reverseproxy_id: "{{ junction_reverseproxy_id }}"
+      server_hostname: "{{ _junction_fact_servers.0.server_hostname }}"
+      server_port: "{{ _junction_fact_servers.0.server_port }}"
+      basic_auth_mode: "{{ junction_basic_auth_mode }}"
+      stateful_junction: "{{ junction_stateful_junction }}"
+      client_ip_http: "{{ junction_client_ip_http }}"
+      scripting_support: "{{ junction_scripting_support }}"
+      junction_cookie_javascript_block: "{{ junction_junction_cookie_javascript_block }}"
+      virtual_hostname: "{{ junction_virtual_hostname }}"
+      server_dn: "{{ _junction_fact_servers.0.server_dn }}"
+      query_contents: "{{ _junction_fact_servers.0.server_query_contents }}"
+      case_sensitive_url: "{{ _junction_fact_servers.0.server_case_sensitive_url }}"
+      windows_style_url: "{{ _junction_fact_servers.0.server_windows_style_url }}"
+      https_port: "{{ _junction_fact_servers.0.server_https_port }}"
+      http_port: "{{ _junction_fact_servers.0.server_http_port }}"
+      proxy_hostname: "{{ _junction_fact_servers.0.server_proxy_hostname }}"
+      proxy_port: "{{ _junction_fact_servers.0.server_proxy_port }}"
+      sms_environment: "{{ junction_sms_environment }}"
+      vhost_label: "{{ junction_vhost_label }}"
+      junction_hard_limit: "{{ junction_junction_hard_limit }}"
+      junction_soft_limit: "{{ junction_junction_soft_limit }}"
+      tfim_sso: "{{ junction_tfim_sso }}"
+      remote_http_header: "{{ junction_remote_http_header }}"
+      preserve_cookie: "{{ junction_preserve_cookie }}"
+      cookie_include_path: "{{ junction_cookie_include_path }}"
+      transparent_path_junction: "{{ junction_transparent_path_junction }}"
+      mutual_auth: "{{ junction_mutual_auth }}"
+      insert_session_cookies: "{{ junction_insert_session_cookies }}"
+      request_encoding: "{{ junction_request_encoding }}"
+      enable_basic_auth: "{{ junction_enable_basic_auth }}"
+      key_label: "{{ junction_key_label }}"
+      gso_resource_group: "{{ junction_gso_resource_group }}"
+      version_two_cookies: "{{ junction_version_two_cookies }}"
+      ltpa_keyfile: "{{ junction_ltpa_keyfile }}"
+      authz_rules: "{{ junction_authz_rules }}"
+      fsso_config_file: "{{ junction_fsso_config_file }}"
+      server_uuid: "{{_junction_fact_servers.0.server_uuid }}"
+      local_ip: "{{ junction_local_ip }}"
+      delegation_support: "{{ junction_delegation_support }}"
+      insert_ltpa_cookies: "{{ junction_insert_ltpa_cookies }}"
+      http2_junction: "{{ junction_http2_junction }}"
+      http2_proxy: "{{ junction_http2_proxy }}"
+      sni_name: "{{ junction_sni_name }}"
+      username: "{{ junction_username }}"
+      password: "{{ junction_password }}"
+      ltpa_keyfile_password: "{{ junction_ltpa_keyfile_password }}"
+  when:
+    - junction_junction_point is defined
+    - junction_junction_type is defined
+    - junction_reverseproxy_id is defined
+    - _junction_fact_servers.0.server_port is defined
+    - _junction_fact_servers.0.server_hostname is defined
+
+
+- name: Add additional servers to {{ junction_junction_point }}
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.junctions_server.add
+    isamapi:
+      reverseproxy_id: "{{ junction_reverseproxy_id }}"
+      junction_point: "{{ junction_junction_point }}"
+      junction_type: "{{ junction_junction_type }}"
+      server_hostname: "{{ item.server_hostname }}"
+      server_port: "{{ item.server_port | int }}"
+      server_dn: "{{ item.server_dn }}"
+      server_uuid: "{{ item.server_uuid }}"
+      stateful_junction: "{{ junction_stateful_junction }}"
+      virtual_hostname: "{{ item.server_virtual_hostname }}"
+      virtual_https_hostname: "{{ item.server_virtual_https_hostname }}"
+      query_contents: "{{ item.server_query_contents }}"
+      case_sensitive_url: "{{ item.server_case_sensitive_url }}"
+      windows_style_url: "{{ item.server_windows_style_url }}"
+      https_port: "{{ item.server_https_port }}"
+      http_port: "{{ item.server_http_port }}"
+      proxy_hostname: "{{ item.server_proxy_hostname }}"
+      proxy_port: "{{ item.server_proxy_port }}"
+      sms_environment: "{{ junction_sms_environment }}"
+      vhost_label: "{{ junction_vhost_label }}"
+  when:
+    - junction_junction_point is defined
+    - junction_reverseproxy_id is defined
+    - junction_junction_type is defined
+    - _junction_fact_servers | length > 1
+  loop: "{{ _junction_fact_servers[1:] }}"
+  loop_control:
+    label: "{{ item.server_hostname }}"
+
+
