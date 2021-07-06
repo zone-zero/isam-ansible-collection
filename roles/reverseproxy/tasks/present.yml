@@ -1,0 +1,79 @@
+#listening port
+- set_fact:
+    _reverseproxy_listening_port_fact: "{{reverseproxy_listening_port}}"
+  when: reverseproxy_listening_port != 'NEXT_AVAIL' and state=="present"
+
+- import_role:
+    name: ibm.isam.reverseproxy_next_value
+  vars:
+    reverseproxy_next_value_stanza_id: "ssl"
+    reverseproxy_next_value_entry_id: "ssl-listening-port"
+    reverseproxy_next_value_min_port: "{{ reverseproxy_min_listening_port }}"
+    reverseproxy_next_value_max_port: "{{ reverseproxy_max_listening_port }}"
+  when: reverseproxy_listening_port == 'NEXT_AVAIL' and state=="present"
+
+- set_fact:
+    _reverseproxy_listening_port_fact: "{{ reverseproxy_next_value_port_fact }}"
+  when: reverseproxy_listening_port == 'NEXT_AVAIL' and state=="present"
+
+#http port
+
+- set_fact:
+    _reverseproxy_http_port_fact: "{{ reverseproxy_http_port }}"
+  when: reverseproxy_http_port != 'NEXT_AVAIL' and state=="present"
+
+- import_role:
+    name: ibm.isam.reverseproxy_next_value
+  vars:
+    reverseproxy_next_value_stanza_id: "server"
+    reverseproxy_next_value_entry_id: "http-port"
+    reverseproxy_next_value_min_port: "{{ reverseproxy_min_http_port }}"
+    reverseproxy_next_value_max_port: "{{ reverseproxy_max_http_port }}"
+  when: reverseproxy_http_port == 'NEXT_AVAIL' and state=="present"
+
+- set_fact:
+    _reverseproxy_http_port_fact:  "{{ reverseproxy_next_value_port_fact }}"
+  when: reverseproxy_http_port == 'NEXT_AVAIL' and state=="present"
+
+#https port
+
+- set_fact:
+    _reverseproxy_https_port_fact: "{{reverseproxy_https_port}}"
+  when: reverseproxy_https_port != 'NEXT_AVAIL' and state=="present"
+
+- import_role:
+    name: ibm.isam.reverseproxy_next_value
+  vars:
+    reverseproxy_next_value_stanza_id: "server"
+    reverseproxy_next_value_entry_id: "https-port"
+    reverseproxy_next_value_min_port: "{{ reverseproxy_min_https_port }}"
+    reverseproxy_next_value_max_port: "{{ reverseproxy_max_https_port }}"
+  when: reverseproxy_https_port == 'NEXT_AVAIL' and state=="present"
+
+- set_fact:
+    _reverseproxy_https_port_fact:  "{{ reverseproxy_next_value_port_fact }}"
+  when: reverseproxy_https_port == 'NEXT_AVAIL' and state=="present"
+
+- name: Add "{{ reverseproxy_inst_name }}" reverse proxy
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.instance.add
+    isamapi:
+      inst_name: "{{ reverseproxy_inst_name }}"
+      admin_pwd: "{{ reverseproxy_admin_pwd }}"
+      host: "{{ reverseproxy_host }}"
+      listening_port: "{{ _reverseproxy_listening_port_fact }}"
+      domain: "{{ reverseproxy_domain }}"
+      admin_id: "{{ reverseproxy_admin_id }}"
+      ssl_yn: "{{ reverseproxy_ssl_yn }}"
+      key_file: "{{ reverseproxy_key_file }}"
+      cert_label: "{{ reverseproxy_cert_label }}"
+      ssl_port: "{{ reverseproxy_ssl_port }}"
+      http_yn: "{{ reverseproxy_http_yn }}"
+      http_port: "{{ _reverseproxy_http_port_fact }}"
+      https_yn: "{{ reverseproxy_https_yn }}"
+      https_port: "{{ _reverseproxy_https_port_fact }}"
+      nw_interface_yn: "{{ reverseproxy_nw_interface_yn }}"
+      ip_address: "{{ reverseproxy_ip_address }}"
+      check_mode: False

@@ -1,0 +1,34 @@
+state: 'present'
+force: False
+
+reverseproxy_inst_name: 'default'
+reverseproxy_admin_pwd: 'passw0rd'
+reverseproxy_listening_port: 'NEXT_AVAIL'
+reverseproxy_domain: 'Default'
+reverseproxy_admin_id: 'sec_master'
+reverseproxy_ssl_yn: 'no'
+reverseproxy_key_file: null
+reverseproxy_cert_label: null
+reverseproxy_ssl_port: null
+reverseproxy_http_yn: 'no'
+reverseproxy_http_port: 'NEXT_AVAIL'
+reverseproxy_https_yn: 'yes'
+reverseproxy_https_port: 'NEXT_AVAIL'
+reverseproxy_nw_interface_yn: 'no'
+reverseproxy_ip_address: 0.0.0.0
+# Define a common web root if it is needed to switch to it
+# common_web_root: mywebroot"
+reverseproxy_common_web_root_description: "Common Web Root for ACLs/POPs/AuthzRules"
+
+#range of ports to check for next available listening port
+reverseproxy_min_listening_port: 7234
+reverseproxy_max_listening_port: 7334
+
+
+#range of ports to check for next available ssl port
+reverseproxy_min_https_port: 10000
+reverseproxy_max_https_port: 11000
+
+#range of ports to check for next available ssl port
+reverseproxy_min_http_port: 12000
+reverseproxy_max_http_port: 13000

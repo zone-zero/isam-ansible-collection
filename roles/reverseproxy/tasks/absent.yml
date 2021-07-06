@@ -1,0 +1,19 @@
+# - name: get reverse proxies to find id for instance "{{ reverseproxy_inst_name }}"
+#   ibm.isam.isam:
+#     log: "{{ log_level | default('INFO') }}"
+#     force: "{{ force | default(False) }}"
+#     action: ibmsecurity.isam.web.reverse_proxy.instance.get
+#   register: proxy_ret_obj
+#   #changed: false
+
+- name: Delete "{{ reverseproxy_inst_name }}" reverse proxy
+  ibm.isam.isam:
+    log: "{{ log_level | default('INFO') }}"
+    force: "{{ force | default(False) }}"
+    action: ibmsecurity.isam.web.reverse_proxy.instance.delete
+    isamapi:
+      id: "{{ reverseproxy_inst_name }}"
+      admin_pwd: "{{ reverseproxy_admin_pwd }}"
+      admin_id: "{{ reverseproxy_admin_id }}"
+      check_mode: False
+
