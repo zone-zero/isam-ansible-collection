@@ -14,7 +14,6 @@ junction_client_ip_http:
 junction_scripting_support:
 junction_junction_cookie_javascript_block:
 junction_virtual_hostname:
-junction_server_dn:
 junction_query_contents:
 junction_case_sensitive_url:
 junction_windows_style_url:
@@ -40,7 +39,6 @@ junction_ltpa_keyfile:
 junction_ltpa_keyfile_password:
 junction_authz_rules:
 junction_fsso_config_file:
-junction_server_uuid:
 junction_local_ip:
 junction_delegation_support:
 junction_insert_ltpa_cookies:
