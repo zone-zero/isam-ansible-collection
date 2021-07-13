@@ -13,6 +13,10 @@
     label: "\nstanza: [{{ item.0.stanza_id }}] \n\tentry:\n\t{{ item.1.0 }}"
   register: config_get_ret_obj
 
+- name: init reverseproxy_conf_get return fact
+  set_fact:
+    reverseproxy_conf_get: "{{ {} }}"
+  
 - name: set to 'reverseproxy_conf_get.[key]' fact for returned entry
   set_fact:
     reverseproxy_conf_get: "{{ reverse_proxy_conf_get | default({}) | \
