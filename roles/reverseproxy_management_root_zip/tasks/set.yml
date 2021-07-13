@@ -34,7 +34,9 @@
       instance_id: "{{ reverseproxy_management_root_zip_inst_id }}"
       filename: "{{ reverseproxy_management_root_zip_file | default(reverseproxy_management_root_zip_path) }}"
       delete_missing: "{{ reverseproxy_management_root_zip_delete_missing }}"
+  register: import_zip_result
   retries: 3 #this task seems prone to timeout failure. try a few times.
   delay: 1
+  until: import_zip_result.rc == 0
   notify:
   - Commit Changes
