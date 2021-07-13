@@ -29,11 +29,11 @@
     reverseproxy_next_value_entry_id: "http-port"
     reverseproxy_next_value_min_port: "{{ reverseproxy_min_http_port }}"
     reverseproxy_next_value_max_port: "{{ reverseproxy_max_http_port }}"
-  when: reverseproxy_http_port == 'NEXT_AVAIL' and state=="present"
+  when: reverseproxy_http_port == 'NEXT_AVAIL' and state=="present" and reverseproxy_http_yn == 'yes'
 
 - set_fact:
     _reverseproxy_http_port_fact:  "{{ reverseproxy_next_value_port_fact }}"
-  when: reverseproxy_http_port == 'NEXT_AVAIL' and state=="present"
+  when: reverseproxy_http_port == 'NEXT_AVAIL' and state=="present" and reverseproxy_http_yn == 'yes'
 
 #https port
 
@@ -48,11 +48,11 @@
     reverseproxy_next_value_entry_id: "https-port"
     reverseproxy_next_value_min_port: "{{ reverseproxy_min_https_port }}"
     reverseproxy_next_value_max_port: "{{ reverseproxy_max_https_port }}"
-  when: reverseproxy_https_port == 'NEXT_AVAIL' and state=="present"
+  when: reverseproxy_https_port == 'NEXT_AVAIL' and state=="present" and reverseproxy_https_yn == 'yes'
 
 - set_fact:
     _reverseproxy_https_port_fact:  "{{ reverseproxy_next_value_port_fact }}"
-  when: reverseproxy_https_port == 'NEXT_AVAIL' and state=="present"
+  when: reverseproxy_https_port == 'NEXT_AVAIL' and state=="present" and reverseproxy_https_yn == 'yes'
 
 - name: Add "{{ reverseproxy_inst_name }}" reverse proxy
   ibm.isam.isam:
@@ -71,9 +71,9 @@
       cert_label: "{{ reverseproxy_cert_label }}"
       ssl_port: "{{ reverseproxy_ssl_port }}"
       http_yn: "{{ reverseproxy_http_yn }}"
-      http_port: "{{ _reverseproxy_http_port_fact }}"
+      http_port: "{{ _reverseproxy_http_port_fact | default ('') }}"
       https_yn: "{{ reverseproxy_https_yn }}"
-      https_port: "{{ _reverseproxy_https_port_fact }}"
+      https_port: "{{ _reverseproxy_https_port_fact | default('') }}"
       nw_interface_yn: "{{ reverseproxy_nw_interface_yn }}"
       ip_address: "{{ reverseproxy_ip_address }}"
       check_mode: False
